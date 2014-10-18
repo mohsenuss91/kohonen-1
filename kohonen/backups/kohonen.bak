@@ -1,0 +1,52 @@
+from PIL import Image
+import random
+
+
+ITER = 20;
+path = "images/forest.jpg"
+im = Image.open(path)
+image = im.load()
+dim = im.size
+
+
+# Centroids
+classes = int(raw_input("How many colors? "));
+centroids = [[random.randint(0, 255) for i in xrange(3)] for j in xrange(classes)]
+
+print "Centroids: ", centroids
+print "Dimensions: ", dim
+
+for q  in xrange(2, ITER):
+	# Moving inside the image.
+	for i in xrange(dim[0]):
+		for j in xrange(dim[1]):
+			minimum = 10e4
+			pixel = image[i, j]
+			for k in xrange(classes):
+				distance = pow(pixel[0] - centroids[k][0], 2) + pow(pixel[1] - centroids[k][1], 2) + pow(pixel[2] - centroids[k][2], 2)
+				if distance < minimum:
+					minimum = distance
+					cPoint = k
+			centroids[cPoint][0] += (pixel[0] - centroids[cPoint][0]) / q
+			centroids[cPoint][1] += (pixel[1] - centroids[cPoint][1]) / q
+			centroids[cPoint][2] += (pixel[2] - centroids[cPoint][2]) / q
+
+print "Moved centroids "
+print centroids
+
+
+# Working demo
+
+for i in xrange(dim[0]):
+	for j in xrange(dim[1]):
+        	minimum = 10e4
+                pixel = image[i, j]
+                for k in xrange(classes):
+                	distance = pow(pixel[0] - centroids[k][0], 2) + pow(pixel[1] - centroids[k][1], 2) + pow(pixel[2] - centroids[k][2], 2)
+                	if distance < minimum:
+                        	minimum = distance
+                                cPoint = k
+		
+		image[i, j] = (centroids[cPoint][0], centroids[cPoint][1], centroids[cPoint][2])
+
+im.save("opt.jpg")
